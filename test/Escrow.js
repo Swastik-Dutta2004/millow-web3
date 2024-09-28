@@ -70,7 +70,11 @@ describe("Listing", () => {
 
     it("Return purchase price", async() => {
         const result = await escrow.purchaseprice(1)
-        expect(await realEstate.ownerOf(1)).to.be.equal(escrow.address)
+        expect(result).to.be.equal(tokens(10))
+    })
+    it("Return purchase price", async() => {
+        const result = await escrow.escrowAmount(1)
+        expect(result).to.be.equal(tokens(5))
     })
    
 })
