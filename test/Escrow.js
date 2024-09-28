@@ -64,7 +64,12 @@ describe("Listing", () => {
     })
 
 
-    it("Returns NFT address", async() => {
+    it("updates ownership", async() => {
+        expect(await realEstate.ownerOf(1)).to.be.equal(escrow.address)
+    })
+
+    it("Return purchase price", async() => {
+        const result = await escrow.purchaseprice(1)
         expect(await realEstate.ownerOf(1)).to.be.equal(escrow.address)
     })
    
