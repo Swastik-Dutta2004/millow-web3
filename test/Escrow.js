@@ -10,6 +10,6 @@ describe('Escrow', () => {
         const RealEstate = await ethers.getContractFactory("RealEstate")
         const realEstate = await RealEstate.deploy()
 
-        console.log(realEstate.address);
+        let transaction = await realEstate.mint("https://ipfs.io/ipfs/QmQJc3tWrenPYqqHHWFVTTNxBww3Zagyr2udhPGCYn6mze?filename=1.json")
     })
 })
