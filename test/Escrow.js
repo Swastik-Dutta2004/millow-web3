@@ -29,6 +29,12 @@ describe('Escrow', () => {
             inspector.address,
             lender.address,
         )
+
+        transaction =  await realEstate.connect(seller).approve(escrow.address ,1)
+        await transaction.wait()
+
+        transaction = await escrow.connect(seller).list(1)
+        await transaction.wait()
     })
 
     describe("Deployment", () => {
@@ -48,6 +54,14 @@ describe('Escrow', () => {
             const result = await escrow.lender()
             expect(result).to.be.equal(lender.address)  
      })
+})
+
+
+describe("Listing", () => {
+    it("Returns NFT address", async() => {
+        expect(await realEstate.ownerOf(1)).to.be.equal(escrow.address)
+    })
+   
 })
 
 })
