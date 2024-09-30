@@ -9,32 +9,35 @@ describe('Escrow', () => {
     let buyer, seller, inspector, lender
     let realEstate
     let escrow
-
-    beforeEach(async () => {
-        //Setup accounts
-        [buyer, seller, inspector, lender] = await ethers.getSigners()
-
-        // Deploy Real Estate
-        const RealEstate = await ethers.getContractFactory("RealEstate")
-        realEstate = await RealEstate.deploy()
-
-        //Mint
-        let transaction = await realEstate.connect(seller).mint("https://ipfs.io/ipfs/QmQJc3tWrenPYqqHHWFVTTNxBww3Zagyr2udhPGCYn6mze?filename=1.json")
-        await transaction.wait()
-
-        const Escrow = await ethers.getContractFactory("Escrow")
-        escrow = await Escrow.deploy(
-            realEstate.address,
-            seller.address,
-            inspector.address,
-            lender.address,
-        )
-
-        transaction =  await realEstate.connect(seller).approve(escrow.address ,1)
-        await transaction.wait()
-
-        transaction = await escrow.connect(seller).list(1)
-        await transaction.wait()
+    
+        beforeEach(async () => {
+            // Setup accounts
+            [buyer, seller, inspector, lender] = await ethers.getSigners()
+    
+            // Deploy Real Estate
+            const RealEstate = await ethers.getContractFactory('RealEstate')
+            realEstate = await RealEstate.deploy()
+    
+            // Mint 
+            let transaction = await realEstate.connect(seller).mint("https://ipfs.io/ipfs/QmQJc3tWrenPYqqHHWFVTTNxBww3Zagyr2udhPGCYn6mze?filename=1.json")
+            await transaction.wait()
+    
+            // Deploy Escrow
+            const Escrow = await ethers.getContractFactory('Escrow')
+            escrow = await Escrow.deploy(
+                realEstate.address,
+                seller.address,
+                inspector.address,
+                lender.address
+            )
+    
+            // Approve Property
+            transaction = await realEstate.connect(seller).approve(escrow.address, 1)
+            await transaction.wait()
+    
+            // List Property
+            transaction = await escrow.connect(seller).list(1, buyer.address, tokens(10), tokens(5))
+            await transaction.wait()
     })
 
     describe("Deployment", () => {
@@ -63,7 +66,6 @@ describe("Listing", () => {
         expect(result).to.be.equal(true)
     })
 
-
     it("updates ownership", async() => {
         expect(await realEstate.ownerOf(1)).to.be.equal(escrow.address)
     })
@@ -72,11 +74,17 @@ describe("Listing", () => {
         const result = await escrow.purchaseprice(1)
         expect(result).to.be.equal(tokens(10))
     })
-    it("Return purchase price", async() => {
+
+    it("Return purchase amount", async() => {
         const result = await escrow.escrowAmount(1)
         expect(result).to.be.equal(tokens(5))
     })
+    
+    it("Return purchase address", async() => {
+        const result = await escrow.buyer(1)
+        expect(result).to.be.equal(buyer.address)
+    })
    
-})
+    })
 
 })

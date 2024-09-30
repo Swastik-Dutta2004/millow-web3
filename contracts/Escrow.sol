@@ -15,9 +15,16 @@ contract Escrow {
     address public inspector;
     address public nftAddress;
 
+    modifier onlySeller(){
+       require(msg.sender == seller, "only seller can call method");
+       _;
+    }
+
+
     mapping (uint256 =>  bool) public isListed;
     mapping (uint256 =>  uint256) public purchaseprice;
     mapping (uint256 =>  uint256) public escrowAmount;
+    mapping (uint256 =>  address) public buyer;
 
 
     constructor(
@@ -32,11 +39,12 @@ contract Escrow {
             nftAddress = _nftAddress;
     }
 
-    function list(uint256 _nftID,uint256 _purchaseprice, uint256 _escrowAmount)public {
+    function list(uint256 _nftID,uint256 _purchaseprice, uint256 _escrowAmount,address _buyer)public payable onlySeller {
     IERC721(nftAddress).transferFrom(msg.sender,address(this), _nftID);
 
     isListed[_nftID] = true;
     purchaseprice[_nftID] = _purchaseprice;
     escrowAmount[_nftID] = _escrowAmount;
+    buyer[_nftID] = _buyer;
     }
 }
